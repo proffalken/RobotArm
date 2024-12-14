@@ -1,0 +1,10 @@
+<library path="robotarm_controller">
+    <class 
+        name="robotarm_controller/RobotarmInterface"
+        type="robotarm_controller::RobotarmInterface"
+        base_class_type="hardware_interface::SystemInterface">
+    <description>
+        Robot Arm Hardware Interface
+    </description>
+    </class>
+</library>

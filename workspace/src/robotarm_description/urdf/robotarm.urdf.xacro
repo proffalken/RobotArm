@@ -1,0 +1,148 @@
+<?xml version="1.0" ?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="robotarm">
+
+    <xacro:arg name="is_ignition" default="false"/>
+    <xacro:arg name="is_sim" default="true"/>
+
+    <xacro:include filename="$(find robotarm_description)/urdf/robotarm.gazebo.xacro" />
+    <xacro:include filename="$(find robotarm_description)/urdf/robotarm.ros2.control.xacro" />
+
+    <xacro:property name="PI" value="3.14159" />
+    <xacro:property name="effort" value="30.0" />
+    <xacro:property name="velocity" value="10.0" />
+    <xacro:macro name="default_inertial" params="mass">
+        <inertial>
+            <mass value="${mass}"/>
+            <inertia ixx="1.0" ixy="0.0" ixz="0.0"
+                iyy="1.0" iyz="0.0"
+                izz="1.0"/>
+
+        </inertial>
+    </xacro:macro>
+
+
+    <link name="world" /><!-- Add an anchor for the rest of the frame to stick to -->
+    <link name="platform_link">
+        <xacro:default_inertial mass="1.0" />
+        <visual>
+            <origin rpy="0 0 0" xyz="-0.0 -0.0 1.25" />
+            <geometry>
+                <mesh filename="package://robotarm_description/meshes/Platform.stl" scale="0.01 0.01 0.01"/>
+            </geometry>
+        </visual>
+        <collision>
+            <origin rpy="0 0 0" xyz="-0.0 -0.0 0" />
+            <geometry>
+                <mesh filename="package://robotarm_description/meshes/Platform.stl" scale="0.01 0.01 0.01"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <joint name="virtual_joint" type="fixed">
+        <parent link="world" />
+        <child link="platform_link" />
+        <origin ryp="0 0 0" xyz="${PI/2} 0 0"/>
+    </joint>
+
+    <link name="platform_to_base">
+        <xacro:default_inertial mass="1.0" />
+        <visual>
+            <origin rpy="0 0 0" xyz="-0.0 -0.0 0.95" />
+            <geometry>
+                <mesh filename="package://robotarm_description/meshes/Base.stl" scale="0.01 0.01 0.01"/>
+            </geometry>
+        </visual>
+        <collision>
+            <origin rpy="0 0 0" xyz="-0.0 -0.0 0" />
+            <geometry>
+                <mesh filename="package://robotarm_description/meshes/Base.stl" scale="0.01 0.01 0.01"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <joint name="base" type="revolute">
+        <parent link="platform_link" />
+        <child link="platform_to_base" />
+        <axis xyz="0 0 1" />
+        <origin ryp="0 0 0" xyz="0 0 0.307"/>
+        <limit lower="-${PI/2}" upper="${PI/2}" effort="${effort}" velocity="${velocity}"/> <!-- Radians = pi/2 -->
+    </joint>
+
+    <!-- ARM 1 -->
+
+    <link name="base_arm_1">
+        <xacro:default_inertial mass="1.0" />
+        <visual>
+            <origin rpy="0 0 0" xyz="-0.0 -0.0 -0.01" />
+            <geometry>
+                <mesh filename="package://robotarm_description/meshes/Arm1.stl" scale="0.01 0.01 0.01"/>
+            </geometry>
+        </visual>
+        <collision>
+            <origin rpy="0 0 0" xyz="-0.0 -0.0 -0.01" />
+            <geometry>
+                <mesh filename="package://robotarm_description/meshes/Arm1.stl" scale="0.01 0.01 0.01"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <joint name="base_arm1" type="revolute">
+        <parent link="platform_to_base" />
+        <child link="base_arm_1" />
+        <axis xyz="1 0 0" />
+        <origin ryp="0 0 0" xyz="0 0 0.95"/>
+        <limit lower="-0.331" upper="${PI/2}" effort="${effort}" velocity="${velocity}"/> <!-- Radians = pi/2 -->
+    </joint>
+
+    <!-- ARM 2 -->
+
+    <link name="arm_1_arm_2">
+        <xacro:default_inertial mass="1.0" />
+        <visual>
+            <origin rpy="0 0 0" xyz="-0.0 0.007 -1.0" />
+            <geometry>
+                <mesh filename="package://robotarm_description/meshes/Arm2.stl" scale="0.01 0.01 0.01"/>
+            </geometry>
+        </visual>
+        <collision>
+            <origin rpy="0 0 0" xyz="-0.0 0.007 -1.0" />
+            <geometry>
+                <mesh filename="package://robotarm_description/meshes/Arm2.stl" scale="0.01 0.01 0.01"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <joint name="arm1_arm2" type="revolute">
+        <parent link="base_arm_1" />
+        <child link="arm_1_arm_2" />
+        <axis xyz="1 0 0" />
+        <origin ryp="0 0 0" xyz="0 -0.0125 0.99"/>
+        <limit lower="-${PI/2}" upper="1.149" effort="${effort}" velocity="${velocity}"/> <!-- Radians = pi/2 -->
+    </joint>
+
+    <!-- PALLET FORKS -->
+
+    <link name="arm_2_forks">
+        <xacro:default_inertial mass="1.0" />
+        <visual>
+            <origin rpy="0 0 0" xyz="-0.0 1.0 -1.0" />
+            <geometry>
+                <mesh filename="package://robotarm_description/meshes/PalletForks.stl" scale="0.01 0.01 0.01"/>
+            </geometry>
+        </visual>
+        <collision>
+            <origin rpy="0 0 0" xyz="-0.0 1.0 -1.0" />
+            <geometry>
+                <mesh filename="package://robotarm_description/meshes/PalletForks.stl" scale="0.01 0.01 0.01"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <joint name="arm2_forks" type="revolute">
+        <parent link="arm_1_arm_2" />
+        <child link="arm_2_forks" />
+        <axis xyz="1 0 0" />
+        <origin ryp="0 0 0" xyz="0 -1.0 0.0"/>
+        <limit lower="-${PI/2}" upper="0.576" effort="${effort}" velocity="${velocity}"/> <!-- Radians = pi/2 -->
+    </joint>
+</robot>

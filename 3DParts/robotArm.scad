@@ -17,22 +17,22 @@ include <servo.scad>
 ////// YOU NEED TO VIEW THE ENTIRE ASSEMBLY
 
 // Display the modules without the motors in place
-platform(show_motors = 0, show_stands = 1);
-base();
-arm1();
-arm2();
+//platform(show_motors = 1, show_stands = 1);
+//base();
+//arm1();
+//arm2();
 // wrist();
-pallet_forks();
+//pallet_forks();
 
 // Display the modules with the motors in place
-/*
-platform(show_motors = 1);
-base(show_motors = 1);
-arm1(show_motors = 1);
-arm2(show_motors = 1);
-wrist(show_motors = 1);
+//
+//platform(show_motors = 1);
+//base(show_motors = 1);
+//arm1(show_motors = 1);
+//arm2(show_motors = 1);
+//wrist(show_motors = 1);
 pallet_forks(show_motors = 1);
-*/
+//*/
 
 
 
