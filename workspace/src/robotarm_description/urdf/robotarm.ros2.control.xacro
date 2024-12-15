@@ -16,34 +16,41 @@
         </xacro:if>
         
 
-        <xacro:unless value="$(arg is_sim)">
+        <!-- xacro:unless value="$(arg is_sim)">
             <hardware>
-                <plugin>robotarm_controller/ArduinobotInterface</plugin>
+                <plugin>robotarm_controller/RobotarmInterface</plugin>
                 <param name="port">/dev/ttyUSB0</param>
             </hardware>
-        </xacro:unless>
+        </xacro:unless -->
 
-        <!-- joint name="joint_1">
+        <joint name="base">
             <command_interface name="position">
                 <param name="min">-${PI /2}</param>                        
                 <param name="max">$PI / 2}</param>                        
             </command_interface>
             <state_interface name="position"/>
         </joint>
-        <joint name="joint_2">
+        <joint name="base_arm1">
             <command_interface name="position">
                 <param name="min">-${PI /2}</param>                        
                 <param name="max">$PI / 2}</param>                        
             </command_interface>
             <state_interface name="position"/>
         </joint>
-        <joint name="joint_3">
+        <joint name="arm1_arm2">
             <command_interface name="position">
                 <param name="min">-${PI /2}</param>                        
                 <param name="max">$PI / 2}</param>                        
             </command_interface>
             <state_interface name="position"/>
-        </joint -->
+        </joint>
+        <joint name="arm2_forks">
+            <command_interface name="position">
+                <param name="min">-${PI /2}</param>                        
+                <param name="max">$PI / 2}</param>                        
+            </command_interface>
+            <state_interface name="position"/>
+        </joint>
 
     </ros2_control>
 </robot>

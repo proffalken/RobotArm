@@ -1,7 +1,6 @@
 controller_manager:
   ros__parameters:
     update_rate: 10 # Hz
-
     arm_controller:
       type: joint_trajectory_controller/JointTrajectoryController
 
@@ -9,9 +8,14 @@ controller_manager:
       type: joint_state_broadcaster/JointStateBroadcaster
 
 arm_controller:
+
   ros__parameters:
     joints:
-      - joint_1
+      - base
+      - platform_to_base
+      - base_arm1
+      - arm1_arm2
+      - arm2_forks
 
     command_interfaces:
       - position
@@ -20,4 +24,4 @@ arm_controller:
       - position
 
     open_loop_control: true
-    allow_integration_in_goal_trajectories: true
+      #    allow_integration_in_goal_trajectories: true

@@ -35,7 +35,7 @@ def generate_launch_description():
             )
     
     ros_distro = os.environ["ROS_DISTRO"]
-    is_ignition = "True" if ros_distro == "humber" else "False"
+    is_ignition = "True" if ros_distro == "humble" else "False"
     physics_engine = "" if ros_distro == "humble" else "--physics-engine gz-physics-bullet-featherstone-plugin"
 
 
@@ -66,8 +66,6 @@ def generate_launch_description():
                 "gz_sim.launch.py"
                 )
 
-    print(gz_launch_py)
-
     gazebo = IncludeLaunchDescription(
             PythonLaunchDescriptionSource([gz_launch_py]),
                     launch_arguments = [
@@ -84,40 +82,6 @@ def generate_launch_description():
                        ]
             )
 
-#    gz_ros2_bridge = Node(
-#            package = "ros_gz_bridge",
-#            executable = "parameter_bridge",
-#            arguments = [
-#                    "/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock", 
-#                ]
-#            )
-
- # ros gz bridge
-    bridge_params = os.path.join(
-        get_package_share_directory('robotarm_description'),
-        'params',
-        'params.yaml'
-    )
-
-    start_gazebo_ros_bridge_cmd = Node(
-    package='ros_gz_bridge',
-    executable='parameter_bridge',
-    arguments=[
-        '--ros-args',
-        '-p',
-        f'config_file:={bridge_params}',
-    ],
-    output='screen',
-    )
-
-
-    # ros gz bridge for image
-    start_gazebo_ros_image_bridge_cmd = Node(
-        package='ros_gz_image',
-        executable='image_bridge',
-        arguments=['/rgb_camera/image_raw'],
-        output='screen',
-    )
 
     return LaunchDescription([
             DeclareLaunchArgument(
@@ -134,8 +98,5 @@ def generate_launch_description():
                 robot_state_publisher,
                 gazebo,
                 gz_spawn_entity,
-                #gz_ros2_bridge
-                start_gazebo_ros_bridge_cmd,
-                start_gazebo_ros_image_bridge_cmd
             ]
             )

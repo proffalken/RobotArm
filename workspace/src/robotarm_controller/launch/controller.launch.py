@@ -10,7 +10,7 @@ from ament_index_python.packages import get_package_share_directory
 
 
 def generate_launch_description():
-
+    
     is_sim_arg = DeclareLaunchArgument(
         "is_sim",
         default_value="True"
@@ -27,6 +27,7 @@ def generate_launch_description():
                     "urdf",
                     "robotarm.urdf.xacro",
                 ),
+                " is_sim:=False"
             ]
         ),
         value_type=str,
@@ -35,8 +36,24 @@ def generate_launch_description():
     robot_state_publisher_node = Node(
         package="robot_state_publisher",
         executable="robot_state_publisher",
+        parameters=[{"robot_description": robot_description,
+                     "use_sim_time": False}],
         condition=UnlessCondition(is_sim),
-        parameters=[{"robot_description": robot_description}],
+    )
+
+    controller_manager = Node(
+        package="controller_manager",
+        executable="ros2_control_node",
+        parameters=[
+            {"robot_description": robot_description,
+             "use_sim_time": is_sim},
+            os.path.join(
+                get_package_share_directory("robotarm_controller"),
+                "config",
+                "robotarm_controllers.yaml",
+            ),
+        ],
+        condition=UnlessCondition(is_sim),
     )
 
     joint_state_broadcaster_spawner = Node(
@@ -55,18 +72,12 @@ def generate_launch_description():
         arguments=["arm_controller", "--controller-manager", "/controller_manager"],
     )
 
-    gripper_controller_spawner = Node(
-        package="controller_manager",
-        executable="spawner",
-        arguments=["gripper_controller", "--controller-manager", "/controller_manager"],
-    )
-
     return LaunchDescription(
         [
             is_sim_arg,
             robot_state_publisher_node,
+            controller_manager,
             joint_state_broadcaster_spawner,
             arm_controller_spawner,
-            gripper_controller_spawner,
         ]
     )
