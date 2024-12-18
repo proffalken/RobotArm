@@ -1,5 +1,6 @@
 controller_manager:
   ros__parameters:
+    use_sim_time: true
     update_rate: 10 # Hz
     arm_controller:
       type: joint_trajectory_controller/JointTrajectoryController
@@ -12,7 +13,6 @@ arm_controller:
   ros__parameters:
     joints:
       - base
-      - platform_to_base
       - base_arm1
       - arm1_arm2
       - arm2_forks
