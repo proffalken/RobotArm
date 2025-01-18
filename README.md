@@ -23,6 +23,36 @@ There is a long way to go before I get there...
 
 ## What can it do now?
 
-Nothing.  As of this writing (01st May 2024), all that is available are the 3D printable parts.
+At present, there is a digital twin that you can launch with the command `ros2 launch robotarm_bringup simulated_robot.launch.py`.
 
-I hope to add some code based on ROS2 in the coming weeks and months.
+All the code is based on the excellent [Udemy Robot Manipulator Course](https://www.udemy.com/course/robotics-and-ros-2-learn-by-doing-manipulators/) and a few other things I've picked up from around the web.
+
+I'm working on integrating [grbl_ros](https://github.com/flynneva/grbl_ros) so that the complexity of moving the steppers to the correct location is reduced to sending GCode, but that's not quite working yet.
+
+Once you've built the robot and plugged it all in, you can run the following commands from within the workspace to make it move:
+
+```
+### Terminal 1 ###
+# Setup the environment
+source ./install/setup.bash
+
+# Start the hardware interface
+ros2 run grbl_ros grbl_node --ros-args --params-file ./src/grbl_config/config/cnc001.yaml
+```
+
+```
+### Terminal 2 ###
+# Setup the environment
+source ./install/setup.bash
+# Unlock the CNC controller
+ros2 action send_goal /cnc_001/send_gcode_cmd grbl_msgs/action/SendGcodeCmd '{command: $X}'
+
+# Set the unit to mm
+ros2 action send_goal /cnc_001/send_gcode_cmd grbl_msgs/action/SendGcodeCmd '{command: G21}'
+
+# Set the distance to relative (so we add/subtract the required distance from the current position)
+ros2 action send_goal /cnc_001/send_gcode_cmd grbl_msgs/action/SendGcodeCmd '{command: G91}'
+
+# Send the feed rate and tell it to move the Z axis 15mm counter-clockwise:
+ros2 action send_goal /cnc_001/send_gcode_cmd grbl_msgs/action/SendGcodeCmd '{command: G1 F500 Z-15}'
+
