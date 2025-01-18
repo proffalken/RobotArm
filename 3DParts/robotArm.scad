@@ -2,6 +2,7 @@ include <gear-lib.scad>
 include <byj48.scad>
 include <Nema17.scad>
 include <servo.scad>
+include <rpi-camera.scad>;
 
 /***********************************************************\
 *                                                           *
@@ -17,7 +18,7 @@ include <servo.scad>
 ////// YOU NEED TO VIEW THE ENTIRE ASSEMBLY
 
 // Display the modules without the motors in place
-//platform(show_motors = 1, show_stands = 1);
+platform(show_motors = 0, show_stands = 1);
 //base();
 //arm1();
 //arm2();
@@ -31,7 +32,7 @@ include <servo.scad>
 //arm1(show_motors = 1);
 //arm2(show_motors = 1);
 //wrist(show_motors = 1);
-pallet_forks(show_motors = 1);
+//pallet_forks(show_motors = 1);
 //*/
 
 
@@ -66,7 +67,7 @@ module platform(show_motors = 0, show_stands = 0){
         if (show_motors == 1)
         {
             translate([0,67,-52]) Nema17(47);
-        }
+        
         // Motor Gear
         translate([0,67,16.5]) difference(){
             rotate([0,0,7]) gear(24,10,25);
@@ -76,11 +77,44 @@ module platform(show_motors = 0, show_stands = 0){
             }
             
         }
+    }
         if ( show_stands == 1){
             // Front Right
-            translate([45,-50,-52]) cube([5, 40, 52]);
+            translate([45,-50,-52]) {
+                cube([5, 40, 52]);
+                rotate([0,90,0]) difference() {
+                    cube([5, 40, 40]);
+                    translate([0,20,15]) rotate([0,90,0]) cylinder(d=4, h=5, $fn=100);
+                    translate([0,20,30]) rotate([0,90,0]) cylinder(d=4, h=5, $fn=100);
+                }
+            }
             // Front Left
-            translate([-50,-50,-52]) cube([5, 40, 52]);
+            translate([-50,-50,-52]){
+                cube([5, 40, 52]);
+                rotate([0,-90,0]) difference() {
+                    cube([5, 40, 40]);
+                    translate([0,20,15]) rotate([0,90,0]) cylinder(d=4, h=5, $fn=100);
+                    translate([0,20,30]) rotate([0,90,0]) cylinder(d=4, h=5, $fn=100);
+                }
+            }
+            // Rear Right
+            translate([45,60,-52]) {
+                cube([5, 40, 52]);
+                rotate([0,90,0]) difference() {
+                    cube([5, 40, 40]);
+                    translate([0,20,15]) rotate([0,90,0]) cylinder(d=4, h=5, $fn=100);
+                    translate([0,20,30]) rotate([0,90,0]) cylinder(d=4, h=5, $fn=100);
+                }
+            }
+            // Rear Left
+            translate([-50,60,-52]){
+                cube([5, 40, 52]);
+                rotate([0,-90,0]) difference() {
+                    cube([5, 40, 40]);
+                    translate([0,20,15]) rotate([0,90,0]) cylinder(d=4, h=5, $fn=100);
+                    translate([0,20,30]) rotate([0,90,0]) cylinder(d=4, h=5, $fn=100);
+                }
+            }
         }
     }
 }
@@ -363,6 +397,13 @@ module arm2(show_motors = 0){
                 cylinder(h=200, r=2.5, $fn=260);
                 translate([4.7, 0,0]) cube([5,5,200], center=true);
             }
+        }
+        // Camera and mount
+        translate([0, -110, 115]) union() {
+            // Mount
+            cube([25, 5, 5],center = true);
+        // Camera
+        translate([12.5,0,0]) rotate([0,270,90]) rpi_camera();
         }
     }
 }
