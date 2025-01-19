@@ -26,16 +26,7 @@ def generate_launch_description():
             launch_arguments={"is_sim": "False"}.items()
             )
 
-    remote_interface = IncludeLaunchDescription(
-            os.path.join(
-                get_package_share_directory("robotarm_remote"),
-                "launch",
-                "remote_interface.launch.py"
-                )
-            )
-
     return LaunchDescription([
         controller,
         moveit,
-        remote_interface,
         ])
