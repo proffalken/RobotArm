@@ -18,8 +18,8 @@ include <rpi-camera.scad>;
 ////// YOU NEED TO VIEW THE ENTIRE ASSEMBLY
 
 // Display the modules without the motors in place
-platform(show_motors = 0, show_stands = 1);
-//base();
+//platform(show_motors = 0, show_stands = 1);
+base(show_motors = 0);
 //arm1();
 //arm2();
 // wrist();
@@ -123,28 +123,28 @@ module platform(show_motors = 0, show_stands = 0){
 module base(show_motors = 0){
     translate([0,6,0]){
         // Base Support
-        translate([0,2,-20]) difference(){
+        translate([0,2,-15]) difference(){
             // main frame
-            cube([60, 40, 60], center=true);
+            cube([60, 40, 70], center=true);
             // cutout
-            translate([0,-5,5]) cube([50, 40, 60], center=true);
+            translate([0,-5,5]) cube([50, 40, 70], center=true);
             // Base Pivot
-            translate([0,-8,-60]) cylinder(d=4, h=100, $fn=100);
+            translate([0,-8,-70]) cylinder(d=4, h=100, $fn=100);
             // Arm pivot
-            translate([-50,-8,20]) rotate([0,90,0]) cylinder(d=4, h=100, $fn=100);
+            translate([-50,-8,30]) rotate([0,90,0]) cylinder(d=4, h=100, $fn=100);
             // Nema17 Holes
-            translate([0,40,-6.5]){   
+            translate([0,40,4.5]){   
                 translate([15.5,0,15.5]) rotate([90,0,0]) cylinder(d=3, h=100, $fn=100);
                 translate([-15.5,0,15.5]) rotate([90,0,0]) cylinder(d=3, h=100, $fn=100);
                 translate([15.5,0,-15.5]) rotate([90,0,0]) cylinder(d=3, h=100, $fn=100);
                 translate([-15.5,0,-15.5]) rotate([90,0,0]) cylinder(d=3, h=100, $fn=100);
             }
             // Main Nema17 Guide Shaft
-            translate([0,40,-6.5]) rotate([90,0,0]) cylinder(d=22, h=100, $fn=100);
+            translate([0,40,4.5]) rotate([90,0,0]) cylinder(d=22, h=100, $fn=100);
         }
 
         // WORM DRIVE bottom of arm (88)
-        translate([0,15.20,-26.75]) rotate([90,0,0]) difference(){
+        translate([0,15.20,-10.75]) rotate([90,0,0]) difference(){
             worm(25);
             translate([0,0,-20]) difference() {
                 cylinder(h=200, r=2.5, $fn=260);
