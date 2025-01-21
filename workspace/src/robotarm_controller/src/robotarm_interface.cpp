@@ -109,6 +109,32 @@ namespace robotarm_controller {
 
 
         RCLCPP_INFO(rclcpp::get_logger("RobotarmInterface"), "Connection successful, ready for commands");
+        // Intialise the controller
+        std::string msg;
+        msg = "$X";
+        try{
+            arduino_.Write(msg);
+        }
+        catch (...) {
+            RCLCPP_FATAL_STREAM(rclcpp::get_logger("RobotarmInterface"), "Something went wrong whilst trying to send " << msg << " to port " << port_);
+            return CallbackReturn::FAILURE;
+        }
+        msg = "G21";
+        try{
+            arduino_.Write(msg);
+        }
+        catch (...) {
+            RCLCPP_FATAL_STREAM(rclcpp::get_logger("RobotarmInterface"), "Something went wrong whilst trying to send " << msg << " to port " << port_);
+            return CallbackReturn::FAILURE;
+        }
+        msg = "G91";
+        try{
+            arduino_.Write(msg);
+        }
+        catch (...) {
+            RCLCPP_FATAL_STREAM(rclcpp::get_logger("RobotarmInterface"), "Something went wrong whilst trying to send " << msg << " to port " << port_);
+            return CallbackReturn::FAILURE;
+        }
         return CallbackReturn::SUCCESS;
     }
 
@@ -146,27 +172,34 @@ namespace robotarm_controller {
             return hardware_interface::return_type::OK;
         }
 
+        int base = static_cast<int>(((position_commands_.at(0)) * 180));
+//        int base = static_cast<int>((position_commands_.at(0) + 0 ));
+        int shoulder = static_cast<int>(position_commands_.at(1));
         std::string msg;
-        int base = static_cast<int>(((position_commands_.at(0) + (M_PI/2)) * 180) / M_PI);
-        msg.append("b");
-        msg.append(compensateZeros(base));
+        msg.append("G21 F250 X");
         msg.append(std::to_string(base));
-        msg.append(",");
-        int shoulder = 180 - static_cast<int>(((position_commands_.at(1) + (M_PI/2)) * 180) / M_PI);
-        msg.append("s");
-        msg.append(compensateZeros(shoulder));
+        msg.append(" Y");
         msg.append(std::to_string(shoulder));
-        msg.append(",");
-        int elbow = static_cast<int>(((position_commands_.at(2) + (M_PI/2)) * 180) / M_PI);
-        msg.append("e");
-        msg.append(compensateZeros(elbow));
-        msg.append(std::to_string(elbow));
-        msg.append(",");
-        int gripper = static_cast<int>((-position_commands_.at(3) * 180) / (M_PI / 2));
-        msg.append("g");
-        msg.append(compensateZeros(gripper));
-        msg.append(std::to_string(gripper));
-        msg.append(",");
+        RCLCPP_INFO_STREAM(rclcpp::get_logger("RobotarmInterface"), "Message sent: " << msg);
+//        int base = static_cast<int>(((position_commands_.at(0) + (M_PI/2)) * 180) / M_PI);
+//        msg.append("b");
+//        msg.append(compensateZeros(base));
+//        msg.append(std::to_string(base));
+//        msg.append(",");
+//        msg.append("s");
+//        msg.append(compensateZeros(shoulder));
+//        msg.append(std::to_string(shoulder));
+//        msg.append(",");
+//        int elbow = static_cast<int>(((position_commands_.at(2) + (M_PI/2)) * 180) / M_PI);
+//        msg.append("e");
+//        msg.append(compensateZeros(elbow));
+//        msg.append(std::to_string(elbow));
+//        msg.append(",");
+//        int gripper = static_cast<int>((-position_commands_.at(3) * 180) / (M_PI / 2));
+//        msg.append("g");
+//        msg.append(compensateZeros(gripper));
+//        msg.append(std::to_string(gripper));
+//        msg.append(",");
 
         try{
             arduino_.Write(msg);

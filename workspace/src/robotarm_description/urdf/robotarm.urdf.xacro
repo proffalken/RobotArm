@@ -41,7 +41,7 @@
     <joint name="virtual_joint" type="fixed">
         <parent link="world" />
         <child link="platform_link" />
-        <origin ryp="0 0 0" xyz="${PI/2} 0 0"/>
+        <origin ryp="0 0 0" xyz="15 0 0"/>
     </joint>
 
     <link name="platform_to_base">
@@ -65,7 +65,7 @@
         <child link="platform_to_base" />
         <axis xyz="0 0 1" />
         <origin ryp="0 0 0" xyz="0 0 0.307"/>
-        <limit lower="-${PI/2}" upper="${PI/2}" effort="${effort}" velocity="${velocity}"/> <!-- Radians = pi/2 -->
+        <limit lower="-15" upper="15" effort="${effort}" velocity="${velocity}"/> <!-- Radians = pi/2 -->
     </joint>
 
     <!-- ARM 1 -->
@@ -91,7 +91,7 @@
         <child link="base_arm_1" />
         <axis xyz="1 0 0" />
         <origin ryp="0 0 0" xyz="0 0 0.95"/>
-        <limit lower="-0.331" upper="${PI/2}" effort="${effort}" velocity="${velocity}"/> <!-- Radians = pi/2 -->
+        <limit lower="-5" upper="5" effort="${effort}" velocity="${velocity}"/> <!-- Radians = pi/2 -->
     </joint>
 
     <!-- ARM 2 -->
@@ -117,7 +117,7 @@
         <child link="arm_1_arm_2" />
         <axis xyz="1 0 0" />
         <origin ryp="0 0 0" xyz="0 -0.0125 0.99"/>
-        <limit lower="-${PI/2}" upper="1.149" effort="${effort}" velocity="${velocity}"/> <!-- Radians = pi/2 -->
+        <limit lower="-5" upper="5" effort="${effort}" velocity="${velocity}"/> <!-- Radians = pi/2 -->
     </joint>
 
     <!-- PALLET FORKS -->
@@ -143,6 +143,6 @@
         <child link="arm_2_forks" />
         <axis xyz="1 0 0" />
         <origin ryp="0 0 0" xyz="0 -1.0 0.0"/>
-        <limit lower="-${PI/2}" upper="0.576" effort="${effort}" velocity="${velocity}"/> <!-- Radians = pi/2 -->
+        <limit lower="-5" upper="5" effort="${effort}" velocity="${velocity}"/> <!-- Radians = pi/2 -->
     </joint>
 </robot>

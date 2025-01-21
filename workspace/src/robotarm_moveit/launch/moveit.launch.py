@@ -18,6 +18,8 @@ def generate_launch_description():
 
     is_sim = LaunchConfiguration("is_sim")
 
+    print(f"=== IS_SIM: {is_sim}")
+
     moveit_config = ( MoveItConfigsBuilder("robotarm", package_name="robotarm_moveit")
     .robot_description(file_path=os.path.join(get_package_share_directory("robotarm_description"), "urdf", "robotarm.urdf.xacro"))
     .robot_description_semantic(file_path="config/robotarm.srdf")
