@@ -1,0 +1,14 @@
+version: '2'
+
+services:
+  talker:
+    image: osrf/ros:jazzy-desktop
+    volumes:
+      - .:/workspace:Z
+    exec: cd /workspace && source ./install/setup.bash && ros2 launch robotarm_remote robotarm_remote_launch.py
+  listener:
+    image: osrf/ros:jazzy-desktop
+    command: ros2 run demo_nodes_cpp listener
+    depends_on:
+      - talker
+

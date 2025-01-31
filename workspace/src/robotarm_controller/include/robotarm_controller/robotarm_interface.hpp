@@ -6,7 +6,7 @@
 #include <rclcpp_lifecycle/state.hpp>
 #include <vector>
 #include <string>
-#include <libserial/SerialPort.h>
+#include <libserial/SerialStream.h>
 
 namespace robotarm_controller
 {
@@ -31,7 +31,9 @@ namespace robotarm_controller
 
 
         private:
-            LibSerial::SerialPort arduino_;
+            void waitForUnlockResponse();
+            void waitForOkResponse();
+            LibSerial::SerialStream arduino_;
             std::string port_;
             std::vector<double> position_commands_;
             std::vector<double> previous_position_commands_;

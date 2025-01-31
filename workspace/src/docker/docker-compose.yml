@@ -1,0 +1,53 @@
+version: '3.3'
+services:
+  manipulator: &manipulator
+    container_name: manipulator
+    image: manipulator:latest
+    ipc: host
+    network_mode: host
+    privileged: true
+    environment:
+      DISPLAY: $DISPLAY
+      XAUTHORITY: "$HOME/.Xauthority"
+    volumes:
+      - $HOME/Projects/Internal/RobotArm/shared/ros2:/root/shared/ros2
+      - $HOME/Projects/Internal/RobotArm/workspace:/root/ros2_ws
+      - $HOME/.Xauthority:/root/.Xauthority
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      - /dev:/dev
+    command: ["tail", "-f", "/dev/null"]
+
+  # The following services are commented out for this tutorial.
+  # They demonstrate how to create multiple containers from the same Docker image,
+  # each running a specific ROS 2 node. These containers can communicate with each other
+  # because they share the same ROS_DOMAIN_ID.
+  # Publisher service: Runs the demo talker node
+  #minimal_publisher:
+  #  <<: *manipulator  # This uses all the same settings as the 'manipulator' service
+  #  container_name: minimal_publisher
+  #  command: ["ros2", "run", "demo_nodes_cpp", "talker"]
+
+  ## Subscriber service: Runs the demo listener node
+  #minimal_subscriber:
+  #  <<: *manipulator  # This uses all the same settings as the 'manipulator' service
+  #  container_name: minimal_subscriber
+  #  command: ["ros2", "run", "demo_nodes_cpp", "listener"]
+  build:
+    <<: *manipulator  # This uses all the same settings as the 'manipulator' service
+    container_name: build
+      # command: ["ros2", "launch", "--debug", "robotarm_description", "display.launch.py"]
+
+  model:
+    <<: *manipulator  # This uses all the same settings as the 'manipulator' service
+    container_name: model
+    command: ["ros2", "launch", "--debug", "robotarm_description", "display.launch.py"]
+
+  simulated:
+    <<: *manipulator  # This uses all the same settings as the 'manipulator' service
+    container_name: simulated
+    command: ["ros2", "launch", "--debug", "robotarm_bringup", "simulated_robot.launch.py"]
+
+  real:
+    <<: *manipulator  # This uses all the same settings as the 'manipulator' service
+    container_name: real
+    command: ["ros2", "launch", "robotarm_bringup", "real_robot.launch.py", "is_sim:=false"]

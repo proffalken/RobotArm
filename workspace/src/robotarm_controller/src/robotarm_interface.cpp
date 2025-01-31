@@ -2,8 +2,57 @@
 #include <hardware_interface/types/hardware_interface_type_values.hpp>
 #include <pluginlib/class_list_macros.hpp>
 
+#include <unistd.h>
+#include <iostream>
+#include <string>
+
+using namespace LibSerial;
+using std::cout;
+using std::string;
+
 
 namespace robotarm_controller {
+    void RobotarmInterface::waitForUnlockResponse()
+    {
+        string response;
+        while (true)
+        {
+            char c;
+            arduino_.get(c);
+            if (c == '\n')
+            {
+                cout << "Response: " << response << "\n";
+                if (response.find("nlock") != string::npos)
+                    break;
+                response.clear();
+            }
+            else
+            {
+                response += c;
+            }
+        }
+    }
+
+    void RobotarmInterface::waitForOkResponse()
+    {
+        string response;
+        while (true)
+        {
+            char c;
+            arduino_.get(c);
+            if (c == '\n')
+            {
+                cout << "Response: " << response << "\n";
+                if (response.find("ok") != string::npos)
+                    break;
+                response.clear();
+            }
+            else
+            {
+                response += c;
+            }
+        }
+    }
 
     std::string compensateZeros(int value)
     {
@@ -100,6 +149,8 @@ namespace robotarm_controller {
         {
             arduino_.Open(port_);
             arduino_.SetBaudRate(LibSerial::BaudRate::BAUD_115200);
+            // Wait for the initial "Grbl" response or ready signal
+            waitForUnlockResponse();
         }
         catch (...)
         {
@@ -110,29 +161,32 @@ namespace robotarm_controller {
 
         RCLCPP_INFO(rclcpp::get_logger("RobotarmInterface"), "Connection successful, ready for commands");
         // Intialise the controller
-        std::string msg;
-        msg = "$X";
         try{
-            arduino_.Write(msg);
+            // Send unlock command
+            cout << "Sending unlock command...\n";
+            arduino_.write("$X\n", 3);
+            arduino_.DrainWriteBuffer();
+            waitForUnlockResponse();
+
         }
         catch (...) {
-            RCLCPP_FATAL_STREAM(rclcpp::get_logger("RobotarmInterface"), "Something went wrong whilst trying to send " << msg << " to port " << port_);
+            RCLCPP_FATAL_STREAM(rclcpp::get_logger("RobotarmInterface"), "Something went wrong whilst trying to UNLOCK port " << port_);
             return CallbackReturn::FAILURE;
         }
-        msg = "G21";
         try{
-            arduino_.Write(msg);
+            arduino_.write("G21\n", 4);
+            waitForOkResponse();
         }
         catch (...) {
-            RCLCPP_FATAL_STREAM(rclcpp::get_logger("RobotarmInterface"), "Something went wrong whilst trying to send " << msg << " to port " << port_);
+            RCLCPP_FATAL_STREAM(rclcpp::get_logger("RobotarmInterface"), "Something went wrong whilst trying to send G21 to port " << port_);
             return CallbackReturn::FAILURE;
         }
-        msg = "G91";
         try{
-            arduino_.Write(msg);
+            arduino_.write("G91\n", 4);
+            waitForOkResponse();
         }
         catch (...) {
-            RCLCPP_FATAL_STREAM(rclcpp::get_logger("RobotarmInterface"), "Something went wrong whilst trying to send " << msg << " to port " << port_);
+            RCLCPP_FATAL_STREAM(rclcpp::get_logger("RobotarmInterface"), "Something went wrong whilst trying to send G91 to port " << port_);
             return CallbackReturn::FAILURE;
         }
         return CallbackReturn::SUCCESS;
@@ -172,40 +226,20 @@ namespace robotarm_controller {
             return hardware_interface::return_type::OK;
         }
 
-        int base = static_cast<int>(((position_commands_.at(0)) * 180));
-//        int base = static_cast<int>((position_commands_.at(0) + 0 ));
-        int shoulder = static_cast<int>(position_commands_.at(1));
-        std::string msg;
-        msg.append("G21 F250 X");
-        msg.append(std::to_string(base));
-        msg.append(" Y");
-        msg.append(std::to_string(shoulder));
-        RCLCPP_INFO_STREAM(rclcpp::get_logger("RobotarmInterface"), "Message sent: " << msg);
-//        int base = static_cast<int>(((position_commands_.at(0) + (M_PI/2)) * 180) / M_PI);
-//        msg.append("b");
-//        msg.append(compensateZeros(base));
-//        msg.append(std::to_string(base));
-//        msg.append(",");
-//        msg.append("s");
-//        msg.append(compensateZeros(shoulder));
-//        msg.append(std::to_string(shoulder));
-//        msg.append(",");
-//        int elbow = static_cast<int>(((position_commands_.at(2) + (M_PI/2)) * 180) / M_PI);
-//        msg.append("e");
-//        msg.append(compensateZeros(elbow));
-//        msg.append(std::to_string(elbow));
-//        msg.append(",");
-//        int gripper = static_cast<int>((-position_commands_.at(3) * 180) / (M_PI / 2));
-//        msg.append("g");
-//        msg.append(compensateZeros(gripper));
-//        msg.append(std::to_string(gripper));
-//        msg.append(",");
+        RCLCPP_INFO_STREAM(rclcpp::get_logger("RobotarmInterface"), "Base Value: " << position_commands_.at(0));
+        float base = static_cast<float>(position_commands_.at(0));
+        float shoulder = static_cast<float>(position_commands_.at(1));
+        std::ostringstream msg;
+        msg << "G21 F250 X" << base << " Y" << shoulder <<"\n";
+        RCLCPP_INFO_STREAM(rclcpp::get_logger("RobotarmInterface"), "Message sent: " << msg.str());
 
         try{
-            arduino_.Write(msg);
+            arduino_.write(msg.str().c_str(), msg.str().length());
+            arduino_.DrainWriteBuffer();
+            waitForOkResponse();
         }
         catch (...) {
-            RCLCPP_FATAL_STREAM(rclcpp::get_logger("RobotarmInterface"), "Something went wrong whilst trying to send " << msg << " to port " << port_);
+            RCLCPP_FATAL_STREAM(rclcpp::get_logger("RobotarmInterface"), "Something went wrong whilst trying to send " << msg.str() << " to port " << port_);
             return hardware_interface::return_type::ERROR;
         }
 
