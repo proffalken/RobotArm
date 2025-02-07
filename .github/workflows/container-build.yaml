@@ -5,7 +5,7 @@ jobs:
   Explore-GitHub-Actions:
     runs-on: ubuntu-latest
     steps:
-      - run: sudo apt install golang-go
+      - run: sudo add-apt-repository ppa:longsleep/golang-backports && sudo apt update && sudo apt install golang-go
       - run: go install github.com/equinix-labs/otel-cli@latest
       - run: sudo grep -ilr gopath /etc
       - run: source /etc/profile; otel-cli exec --service my-service --name "Initial job"; echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
