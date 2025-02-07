@@ -3,9 +3,13 @@ run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
 on: [push]
 jobs:
   Explore-GitHub-Actions:
+    env:
+      GRAFANA_CLOUD_OTLP_ENDPOINT: ${{ secrets.GRAFANA_CLOUD_OTLP_ENDPOINT }}
+      GRAFANA_CLOUD_INSTANCE_ID: ${{ secrets.GRAFANA_CLOUD_INSTANCE_ID }}
+      GRAFANA_CLOUD_API_KEY: ${{ secrets.GRAFANA_CLOUD_API_KEY }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
       - run: go install github.com/equinix-labs/otel-cli@latest
-      - run: otel-cli exec --service my-service --name "Initial job" echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
+      - run: otel-cli --config configs/otelcol.yaml exec --service github_actions --name "Robot Arm - Container Build" echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
