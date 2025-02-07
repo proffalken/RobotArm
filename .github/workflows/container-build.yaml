@@ -7,6 +7,8 @@ jobs:
       GRAFANA_CLOUD_OTLP_ENDPOINT: ${{ secrets.GRAFANA_CLOUD_OTLP_ENDPOINT }}
       GRAFANA_CLOUD_INSTANCE_ID: ${{ secrets.GRAFANA_CLOUD_INSTANCE_ID }}
       GRAFANA_CLOUD_API_KEY: ${{ secrets.GRAFANA_CLOUD_API_KEY }}
+      OTEL_EXPORTER_OTLP_ENDPOINT: ${{ secrets.GRAFANA_CLOUD_OTLP_ENDPOINT }}
+      OTEL_EXPORTER_OTLP_HEADERS: "authorization: Basic ${{ secrets.GRAFANA_CLOUD_BASIC_AUTH }}"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
