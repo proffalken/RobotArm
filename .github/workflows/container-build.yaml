@@ -14,4 +14,4 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
       - run: go install github.com/equinix-labs/otel-cli@latest
-      - run: otel-cli --config configs/otelcol.yaml exec --service github_actions --name "Robot Arm - Container Build" echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
+      - run: otel-cli --verbose exec --service github_actions --name "Robot Arm - Container Build" echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
