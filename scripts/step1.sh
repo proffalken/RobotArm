@@ -5,4 +5,4 @@ set -x
 echo "Build the container"
 
 cd workspace/src/docker
-./build.sh
+otel-cli exec --service github_actions --name "Robot Arm - Container Build Script" ./build.sh

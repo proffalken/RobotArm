@@ -22,7 +22,7 @@ build_docker_image()
     # -t manipulator:latest: Tag the image as manipulator:latest
     # $PARENT_PATH: Use the parent directory as the build context, allowing access to all package files
     # --no-cache: Build the image without using the cache, ensuring fresh dependencies
-    sudo docker image build -f $SCRIPT_PATH/Dockerfile -t manipulator:latest $PARENT_PATH --no-cache
+    otel-cli exec --service github_actions --name "Robot Arm - Docker Run" sudo docker image build -f $SCRIPT_PATH/Dockerfile -t manipulator:latest $PARENT_PATH --no-cache
 }
  
 # Function to create a shared folder
