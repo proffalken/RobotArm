@@ -2,4 +2,7 @@
 
 set -x
 
-echo "🎉 The job was automatically triggered by a push event."
+echo "Build the container"
+
+cd workspace/src/docker
+./build.sh
