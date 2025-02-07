@@ -7,7 +7,8 @@ jobs:
     steps:
       - run: sudo apt install golang-go
       - run: go install github.com/equinix-labs/otel-cli@latest
-      - run: otel-cli exec --service my-service --name "Initial job"; echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
+      - run: grep -ilr gopath /etc
+      - run: source /etc/profile; otel-cli exec --service my-service --name "Initial job"; echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
       - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
       - run: echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
       - name: Check out repository code
