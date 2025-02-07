@@ -8,8 +8,7 @@ jobs:
       - run: sudo add-apt-repository ppa:longsleep/golang-backports && sudo apt update && sudo apt install golang-go
       - run: go install github.com/equinix-labs/otel-cli@latest
       - run: echo "export GOPATH=$HOME/go\nexport PATH=$PATH:$GOROOT/bin:$GOPATH/bin" >> ~/.bashrc
-      - run: echo $PATH
-      - run: otel-cli exec --service my-service --name "Initial job"; echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
+      - run: export PATH=$PATH:$HOME/go/bin; otel-cli exec --service my-service --name "Initial job"; echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
       - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
       - run: echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
       - name: Check out repository code
